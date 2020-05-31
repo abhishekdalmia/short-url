@@ -1,4 +1,5 @@
 function shortenUrl() {
+    let customName = document.getElementById('customName').value;
     let longUrl = document.getElementById('longUrl').value;
     if (!longUrl) {
         alert('Url field cannot be empty.');
@@ -20,9 +21,10 @@ function shortenUrl() {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function() {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            let usrStatus = JSON.parse(xhr.responseText);
-            document.getElementById('shortUrl').innerHTML = 'Shortened URL: ' + usrStatus['shortUrl'];
+            let queryResponse = JSON.parse(xhr.responseText);
+            document.getElementById('message').innerHTML = queryResponse['msg'];
+            // if the request was successFul, the queryResponse also contains <shortUrl>, just in case it is needed here.
         }
     }
-    xhr.send(JSON.stringify({ "longUrl": longUrl }));
+    xhr.send(JSON.stringify({ "longUrl": longUrl, "customName": customName }));
 }

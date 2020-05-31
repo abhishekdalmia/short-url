@@ -56,28 +56,53 @@ app.get('/:shortUrl', async function(req, res) {
 });
 
 app.post('/', async function(req, res) {
-    // called from the file rendered by get request for home
-    let longUrl = req.body['longUrl'];
 
-    let url = await Url
-    .findOne({
-        longUrl: longUrl
-    });
-    let shortUrl = '127.0.0.1:3000/';
-    if (!url) {
-        url = new Url({
-            longUrl: longUrl,
-            creationDate: Date.now()
+    let longUrl = req.body['longUrl'];
+    let customName = req.body['customName'];
+    let url;
+    if (customName != '') {
+        // custom name requested
+        url = await Url
+        .findOne({
+            shortUrl: customName
         });
-        let hash = url['_id'].toString().slice(-6);
-        while(await Url.findOne({ shortUrl: hash })) {
-            hash = md5(hash).slice(-6);
+        if (url) {
+            // url with that customName already exists
+            res.send({ reqStatus: false, shortUrl: null, msg: 'The name ' + customName + ' is not available.' });
         }
-        url['shortUrl'] = hash;
-        await url.save();
+        else {
+            url = new Url({
+                longUrl: longUrl,
+                shortUrl: customName,
+                creationDate: Date.now()
+            });
+            await url.save();
+            res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: 127.0.0.1:' + port.toString() + '/' + url['shortUrl'] });
+        }
     }
-    shortUrl += url['shortUrl'];
-    res.send({ shortUrl: shortUrl });
+    else {
+        // random shortUrl requested
+        url = await Url
+        .findOne({
+            longUrl: longUrl
+        });
+        if (!url) {
+            // url with that longUrl has to be created
+            url = new Url({
+                longUrl: longUrl,
+                creationDate: Date.now()
+            });
+            let hash = url['_id'].toString().slice(-6);
+            while(await Url.findOne({ shortUrl: hash })) {
+                // the current date is added to create randomness
+                hash += Date.now().toString();
+                hash = md5(hash).slice(-6);
+            }
+            url['shortUrl'] = hash;
+            await url.save();
+        }
+        res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: 127.0.0.1:' + port.toString() + '/' + url['shortUrl'] });
+    }
 });
 
 // // This method will be implemented after user signup/login is implemented
