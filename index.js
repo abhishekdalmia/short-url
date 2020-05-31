@@ -11,7 +11,7 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
-mongoose.connect('mongodb://localhost/muffin')
+mongoose.connect('mongodb://localhost/short-url')
     .then(function() {
         console.log('Connected to MongoDB...');
     })
