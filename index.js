@@ -33,8 +33,8 @@ const urlSchema = new mongoose.Schema({
                 }
             }
         ]
-        // [{}]
     },
+    isCustom: String,
     creationDate: { type: Date, default: Date.now() },
     expirationDate: { type: Date, default: Date.now() }
 });
@@ -99,6 +99,7 @@ app.post('/', async function(req, res) {
             url = new Url({
                 longUrl: longUrl,
                 shortUrl: customName,
+                isCustom: true,
                 creationDate: Date.now()
             });
             await url.save();
@@ -109,7 +110,8 @@ app.post('/', async function(req, res) {
         // random shortUrl requested
         url = await Url
         .findOne({
-            longUrl: longUrl
+            longUrl: longUrl,
+            isCustom: false
         });
         if (!url) {
             // url with that longUrl has to be created
@@ -124,6 +126,7 @@ app.post('/', async function(req, res) {
                 hash = md5(hash).slice(-6);
             }
             url['shortUrl'] = hash;
+            url['isCustom'] = false;
             await url.save();
         }
         res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: 127.0.0.1:' + port.toString() + '/' + url['shortUrl'] });
