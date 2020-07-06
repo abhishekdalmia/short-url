@@ -26,15 +26,15 @@ const urlSchema = new mongoose.Schema({
         type: [
             {
                 "date": {
-                    type: Date
+                    type: String
                 },
                 "hits": {
                     type: Number
                 }
             }
         ]
-        // [{}]
     },
+    isCustom: String,
     creationDate: { type: Date, default: Date.now() },
     expirationDate: { type: Date, default: Date.now() }
 });
@@ -43,7 +43,15 @@ const Url = mongoose.model('url', urlSchema);
 
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')));
+
+function getDate() {
+    let today = new Date();
+    let y = today.getFullYear();
+    let m = String(today.getMonth() + 1).padStart(2, "0");
+    let d = String(today.getDate()).padStart(2, "0");
+    return y+m+d;
+}
 
 app.get('', function(req, res) {
     // handling get request for home page, which provides facility to shorten a url
@@ -60,14 +68,14 @@ app.get('/:shortUrl', async function(req, res) {
     });
     if (url) {
         // update the redirect count for this url for current day
-        let currDate = Date.now();
+        let currDate = getDate();
         let tempInd = url['hitRate'].findIndex(x => x.date == currDate);
         if (tempInd === -1) {
             // currDate was not already in the db
             url['hitRate'].push({ 'date': currDate, 'hits': 1 });
         }
         else {
-            url['hitRate'][tempInd] += 1;
+            url['hitRate'][tempInd]['hits'] += 1;
         }
         await url.save();
 
@@ -99,6 +107,7 @@ app.post('/', async function(req, res) {
             url = new Url({
                 longUrl: longUrl,
                 shortUrl: customName,
+                isCustom: true,
                 creationDate: Date.now()
             });
             await url.save();
@@ -109,7 +118,8 @@ app.post('/', async function(req, res) {
         // random shortUrl requested
         url = await Url
         .findOne({
-            longUrl: longUrl
+            longUrl: longUrl,
+            isCustom: false
         });
         if (!url) {
             // url with that longUrl has to be created
@@ -124,6 +134,7 @@ app.post('/', async function(req, res) {
                 hash = md5(hash).slice(-6);
             }
             url['shortUrl'] = hash;
+            url['isCustom'] = false;
             await url.save();
         }
         res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: 127.0.0.1:' + port.toString() + '/' + url['shortUrl'] });
@@ -135,9 +146,9 @@ app.post('/', async function(req, res) {
     
 // });
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 http.listen(port,
     // '0.0.0.0',
     function() {
-        console.log(`Listening on ${port}`)
-})
+        console.log(`Listening on ${port}`);
+});
