@@ -22,6 +22,19 @@ mongoose.connect('mongodb://localhost/short-url')
 const urlSchema = new mongoose.Schema({
     longUrl: String,
     shortUrl: String,
+    hitRate: {
+        type: [
+            {
+                "date": {
+                    type: Date
+                },
+                "hits": {
+                    type: Number
+                }
+            }
+        ]
+        // [{}]
+    },
     creationDate: { type: Date, default: Date.now() },
     expirationDate: { type: Date, default: Date.now() }
 });
@@ -46,6 +59,18 @@ app.get('/:shortUrl', async function(req, res) {
         shortUrl: shortUrl
     });
     if (url) {
+        // update the redirect count for this url for current day
+        let currDate = Date.now();
+        let tempInd = url['hitRate'].findIndex(x => x.date == currDate);
+        if (tempInd === -1) {
+            // currDate was not already in the db
+            url['hitRate'].push({ 'date': currDate, 'hits': 1 });
+        }
+        else {
+            url['hitRate'][tempInd] += 1;
+        }
+        await url.save();
+
         res.redirect(url['longUrl']);
     }
     else {
