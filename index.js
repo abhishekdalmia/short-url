@@ -119,7 +119,7 @@ app.post('/', async function(req, res) {
             });
             await url.save();
             // res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Website.url config: ' + websiteUrl + 'Shortened Url: 127.0.0.1:' + port.toString() + '/' + url['shortUrl'] });
-            res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ' + websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
+            // res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ' + websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
         }
     }
     else {
@@ -145,8 +145,9 @@ app.post('/', async function(req, res) {
             url['isCustom'] = false;
             await url.save();
         }
-        res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ' + websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
+        // res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ' + websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
     }
+    res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ' + websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
 });
 
 // // This method will be implemented after user signup/login is implemented
