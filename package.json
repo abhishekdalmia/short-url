@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "config": "^3.3.3",
     "express": "^4.17.1",
     "md5": "^2.2.1",
     "mongoose": "^5.9.16"

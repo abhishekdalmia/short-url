@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 const process = require('process')
 const path = require('path');
 const md5 = require('md5');
+const config = require('config');
+
+let websiteUrl = config.get('Website.url');
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -80,6 +83,10 @@ app.get('/:shortUrl', async function(req, res) {
         await url.save();
 
         res.redirect(url['longUrl']);
+        // res.status(301).redirect("https://www.google.com");
+        // res.status(301).redirect(url['longUrl']);
+        // res.status(200).send('<script>window.location.href="https://your external ref"</script>');
+        // res.status(200).send('<script>window.location.href=' + url['longUrl'] +'</script>');
     }
     else {
         res.status(404);
@@ -111,7 +118,8 @@ app.post('/', async function(req, res) {
                 creationDate: Date.now()
             });
             await url.save();
-            res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: 127.0.0.1:' + port.toString() + '/' + url['shortUrl'] });
+            // res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Website.url config: ' + websiteUrl + 'Shortened Url: 127.0.0.1:' + port.toString() + '/' + url['shortUrl'] });
+            res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ' + websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
         }
     }
     else {
@@ -137,7 +145,7 @@ app.post('/', async function(req, res) {
             url['isCustom'] = false;
             await url.save();
         }
-        res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: 127.0.0.1:' + port.toString() + '/' + url['shortUrl'] });
+        res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ' + websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
     }
 });
 
@@ -146,7 +154,14 @@ app.post('/', async function(req, res) {
     
 // });
 
-const port = process.env.PORT || 3000;
+let port;
+if (config.has('Website.url')) {
+    port = parseInt(config.get('Website.port'));
+}
+else {
+    port = 3000;
+}
+
 http.listen(port,
     // '0.0.0.0',
     function() {

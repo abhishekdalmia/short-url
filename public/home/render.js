@@ -16,7 +16,7 @@ function shortenUrl() {
         return;
     }
     let xhr = new XMLHttpRequest();
-    let url = 'http://127.0.0.1:3000/';
+    let url = '/';
     xhr.open('POST', url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function() {
