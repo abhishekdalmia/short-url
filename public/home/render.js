@@ -45,6 +45,7 @@ function copyUrl() {
         range.select();
         document.execCommand("copy");
         alert("Copied URL to clipboard.");
+        document.selection.empty();
     }
     else if (window.getSelection) {
         // other browsers
@@ -55,5 +56,6 @@ function copyUrl() {
         selection.addRange(range);
         document.execCommand("copy");
         alert("Copied URL to clipboard.");
+        window.getSelection().removeAllRanges();
     }
 }
