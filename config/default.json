@@ -1,6 +1,6 @@
 {
     "Website": {
-        "url": "192.168.0.107",
+        "url": "localhost",
         "port": "3000"
     }
   }
