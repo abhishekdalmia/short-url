@@ -5,10 +5,16 @@
         </title>
     </head>
     <body>
-        <input id="longUrl" type="text" name="longUrl" placeholder="Enter Url to shorten.">
-        <input id="customName" type="text" name="customName" placeholder="Enter custom alias for short URL.">
-        <button type = "button" name = "button" onclick = "shortenUrl()">Shorten</button>
-        <div id="message"></div>
+        <div style="overflow: hidden;">
+            <input id="longUrl" type="text" name="longUrl" placeholder="Enter Url to shorten." style="float: left; padding: 10 10 10 10; margin: 10 10 10 10;">
+            <input id="customName" type="text" name="customName" placeholder="Enter custom alias for short URL." style="float: left; padding: 10 10 10 10; margin: 10 10 10 10;">
+            <button type="button" name="button" onclick="shortenUrl()" style="float: left; padding: 10 10 10 10; margin: 10 10 10 10;">Shorten</button>
+        </div>
+        <div style="overflow: hidden">
+            <div id="message" style="float: left; padding: 10 10 10 10; margin: 10 10 10 10;"></div>
+            <div id="shortUrl" style="float: left; padding: 10 10 10 10; margin: 10 10 10 10;"></div>
+            <button id="copyUrlButton" type="button" name="button" onclick="copyUrl()" style="visibility: hidden; float: left; padding: 10 10 10 10; margin: 10 10 10 10;">Copy short URL</button>
+        </div>
         <script type="text/javascript" src="/home/render.js"></script>
     </body>
 </html>

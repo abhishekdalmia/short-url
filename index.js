@@ -109,6 +109,7 @@ app.post('/', async function(req, res) {
         if (url) {
             // url with that customName already exists
             res.send({ reqStatus: false, shortUrl: null, msg: 'The name ' + customName + ' is not available.' });
+            return;
         }
         else {
             url = new Url({
@@ -147,7 +148,7 @@ app.post('/', async function(req, res) {
         }
         // res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ' + websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
     }
-    res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ' + websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
+    res.send({ reqStatus: true, shortUrl: url['shortUrl'], msg: 'Shortened Url: ', shortUrl: websiteUrl + ':' + port.toString() + '/' + url['shortUrl'] });
 });
 
 // // This method will be implemented after user signup/login is implemented

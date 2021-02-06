@@ -23,8 +23,37 @@ function shortenUrl() {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
             let queryResponse = JSON.parse(xhr.responseText);
             document.getElementById('message').innerHTML = queryResponse['msg'];
-            // if the request was successFul, the queryResponse also contains <shortUrl>, just in case it is needed here.
+            if (queryResponse['shortUrl'] !== null) {
+                document.getElementById('shortUrl').innerHTML = queryResponse['shortUrl'];
+                document.getElementById("copyUrlButton").style.visibility="visible";
+            }
+            else {
+                document.getElementById('shortUrl').innerHTML = "";
+                document.getElementById("copyUrlButton").style.visibility="hidden";
+            }
         }
     }
     xhr.send(JSON.stringify({ "longUrl": longUrl, "customName": customName }));
+}
+
+function copyUrl() {
+    let shortenedUrl = document.getElementById("shortUrl");
+    if (document.body.createTextRange) {
+        // for ie
+        let range = document.body.createTextRange();
+        range.moveToElementText(shortenedUrl);
+        range.select();
+        document.execCommand("copy");
+        alert("Copied URL to clipboard.");
+    }
+    else if (window.getSelection) {
+        // other browsers
+        let selection = window.getSelection();
+        let range = document.createRange();
+        range.selectNodeContents(shortenedUrl);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand("copy");
+        alert("Copied URL to clipboard.");
+    }
 }
