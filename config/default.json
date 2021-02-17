@@ -2,5 +2,6 @@
     "Website": {
         "url": "localhost",
         "port": "3000"
-    }
-  }
+    },
+    "jwtPrivateKey": ""
+}

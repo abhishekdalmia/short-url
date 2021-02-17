@@ -9,6 +9,12 @@ const config = require('config');
 // routers:
 const home = require('./routes/home');
 const url = require('./routes/url');
+const user = require('./routes/user');
+
+if (!config.get('jwtPrivateKey')) {
+    console.error('FATAL ERROR: jwtPrivateKey is not defined.');
+    process.exit(1);
+}
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -25,8 +31,14 @@ mongoose.connect('mongodb://localhost/short-url')
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+// handle the route handler for root of the website before any other middleware/route handler
+app.get('/', function(req, res) {
+    // this function will give the option to signup/signin or directly use the short-url service
+    res.send("root called");
+});
 app.use('/home/', home);
 app.use('/url/', url);
+app.use('/user/', user);
 
 // Required to set port in default config file
 const port = parseInt(config.get('Website.port'));
