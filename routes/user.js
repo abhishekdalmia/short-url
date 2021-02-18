@@ -22,6 +22,16 @@ router.post('/', async (req, res) => {
     if (user) return res.status(400).send('User already registered.');
 
     user = new User(_.pick(req.body, ['name', 'email', 'password']));
+
+    // generate a unique id for the user
+    let userId = user['_id'].toString().slice(-6);
+    while(await User.findOne({ userId: userId })) {
+        // the current date is added to create randomness
+        userId += Date.now().toString();
+        userId = md5(userId).slice(-6);
+    }
+    user['userId'] = userId;
+
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
     await user.save();

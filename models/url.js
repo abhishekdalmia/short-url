@@ -17,6 +17,7 @@ const urlSchema = new mongoose.Schema({
         ]
     },
     isCustom: String,
+    userId: String,
     creationDate: { type: Date, default: Date.now() },
     expirationDate: { type: Date, default: Date.now() }
 });
@@ -24,10 +25,17 @@ const urlSchema = new mongoose.Schema({
 const Url = mongoose.model('url', urlSchema);
 
 function validateUrl(url) {
-    const schema = {
-        shortUrl: Joi.string()
-    };
-    return Joi.validate(url, schema);
+    let pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    const schema = Joi.object({
+        longUrl: Joi.string().pattern(pattern).required(),
+        customName: Joi.string()
+    });
+    return schema.validate(url);
 }
 
 exports.urlSchema = urlSchema;

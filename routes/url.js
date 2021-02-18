@@ -4,6 +4,8 @@ const {Url, validate} = require('../models/url');
 const { response } = require('express');
 const express = require('express');
 const router = express.Router();
+// custom middlewares:
+const auth = require('../middleware/auth');
 
 // website related config values
 const websiteUrl = config.get('Website.url');
@@ -49,22 +51,20 @@ router.get('/:shortUrl', async function(req, res) {
     }
 });
 
-router.post('/', async function(req, res) {
+router.post('/', auth, async function(req, res) {
+    const { error } = validate(req.body);
+    // Joi returning error while validating means that the given longUrl is not a valid URL
+    if (error) return res.status(400).send("The given longUrl is not a valid URL.");
     let longUrl = req.body['longUrl'];
-    // validate longUrl to be a valid url
-    let pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-    if (!pattern.test(longUrl)) {
-        return res.send({ reqStatus: false, shortUrl: null, message: 'Given long URL is not a valid URL.' });
-    }
-    let customName = req.body['customName'];
     let url;
-    if (customName != '') {
+    let newUrlCreated = false;
+    let customNameRequested = false;
+    if ('customName' in req.body) {
+        customNameRequested = true;
+    }
+    if (customNameRequested === true) {
         // custom name requested
+        let customName = req.body['customName'];
         url = await Url
         .findOne({
             shortUrl: customName
@@ -74,6 +74,7 @@ router.post('/', async function(req, res) {
             return res.send({ reqStatus: false, shortUrl: null, message: 'The name ' + customName + ' is not available.' });
         }
         else {
+            // create a new shortUrl entry in the database
             url = new Url({
                 longUrl: longUrl,
                 shortUrl: customName,
@@ -92,6 +93,7 @@ router.post('/', async function(req, res) {
         });
         if (!url) {
             // url with that longUrl has to be created
+            newUrlCreated = true;
             url = new Url({
                 longUrl: longUrl,
                 creationDate: Date.now()
@@ -107,7 +109,25 @@ router.post('/', async function(req, res) {
             await url.save();
         }
     }
-    res.send({ reqStatus: true, shortUrl: url['shortUrl'], message: 'Shortened Url: ', shortUrl: websiteUrl + ':' + port.toString() + '/url/' + url['shortUrl'] });
+    if ('userId' in req.user) {
+        // current short-url requested by a valid user
+        url['userId'] = req.user['userId'];
+    }
+    else {
+        // current short-url requested by an un-verified user
+        url['userId'] = null;
+    }
+    await url.save();
+    if (customNameRequested === true) {
+        message = "Created new custom URL";
+    }
+    else if (newUrlCreated === true) {
+        message = "Created a new url";
+    }
+    else {
+        message = "Url already existed";
+    }
+    res.send({ reqStatus: true, message: message, shortUrl: websiteUrl + ':' + port.toString() + '/url/' + url['shortUrl'] });
 });
 
 // // This method will be implemented after user signup/login is implemented
