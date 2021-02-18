@@ -7,6 +7,4 @@ Simple url shortening service
 * From the repository folder run "npm install"
 * Run mongo daemon with "mongod"
 * Run the server with "node index.js" or "nodemon index.js"
-
-Note: The Website address has been hardcoded as "127.0.0.1" and the port used is 3000 (if not set otherwise using an environment variable called PORT)
-
+* It is required to define the environment variable "shorturl_jwtprivatekey" in the environment that the app is run
