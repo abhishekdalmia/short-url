@@ -20,8 +20,9 @@ function getDate() {
     return y+m+d;
 }
 
-router.get('', function(req, res) {
-    res.sendFile(path.join(__dirname, '../public/home/', 'index.html'));
+router.get('/', function(req, res) {
+    res.send('This api has no job right now.');
+    // res.sendFile(path.join(__dirname, '../public/home/', 'index.html'));
 });
 
 router.get('/:shortUrl', async function(req, res) {
@@ -46,8 +47,8 @@ router.get('/:shortUrl', async function(req, res) {
         res.redirect(url['longUrl']);
     }
     else {
-        res.status(404);
-        res.sendFile('./public/404/index.html', { root: __dirname });
+        res.status(404).send('Requested short-url not found in the database.');
+        // res.sendFile('./public/404/index.html', { root: __dirname });
     }
 });
 
@@ -130,9 +131,25 @@ router.post('/', auth, async function(req, res) {
     res.send({ reqStatus: true, message: message, shortUrl: websiteUrl + ':' + port.toString() + '/url/' + url['shortUrl'] });
 });
 
-// // This method will be implemented after user signup/login is implemented
-// app.delete('/:id', function(req, res) {
-    
-// });
+router.delete('/', auth, async function(req, res) {
+    if ('userId' in req.user && 'shortUrl' in req.body) {
+        // verified user, shortUrl present in the body, delete the shortUrl mentioned in the body if it exists in the database
+        let url = await Url.deleteOne({ userId: req.user['userId'], shortUrl: req.body['shortUrl'] });
+        if (url['deletedCount'] == 1) {
+            res.status(200).send(`Deleted ${req.body['shortUrl']}`);
+        }
+        else {
+            res.status(400).send('Bad request. (either the url is not present in the database, or the user did not create it)');
+        }
+    }
+    else if ('userId' in req.user && !('shortUrl' in req.body)) {
+        // verified user, shortUrl not present in the body
+        res.status(400).send('No short url provided.');
+    }
+    else {
+        // un-verified user
+        res.status(400).send('You need to be logged in to delete a URL (and that URL has to be created by you).');
+    }
+});
 
 module.exports = router;
