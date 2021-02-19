@@ -72,7 +72,7 @@ router.post('/', auth, async function(req, res) {
         });
         if (url) {
             // url with that customName already exists
-            return res.send({ reqStatus: false, shortUrl: null, message: 'The name ' + customName + ' is not available.' });
+            return res.send({ reqStatus: false, message: 'The name ' + customName + ' is not available.', shortUrl: null });
         }
         else {
             newUrlCreated = true;
@@ -83,7 +83,6 @@ router.post('/', auth, async function(req, res) {
                 isCustom: true,
                 creationDate: Date.now()
             });
-            await url.save();
         }
     }
     else {
@@ -98,6 +97,7 @@ router.post('/', auth, async function(req, res) {
             newUrlCreated = true;
             url = new Url({
                 longUrl: longUrl,
+                isCustom: false,
                 creationDate: Date.now()
             });
             let hash = url['_id'].toString().slice(-6);
@@ -107,8 +107,6 @@ router.post('/', auth, async function(req, res) {
                 hash = md5(hash).slice(-6);
             }
             url['shortUrl'] = hash;
-            url['isCustom'] = false;
-            await url.save();
         }
     }
     if ('userId' in req.user && newUrlCreated === true) {

@@ -13,7 +13,7 @@ const user = require('./routes/user');
 const auth = require('./routes/auth');
 
 if (!config.get('jwtPrivateKey')) {
-    console.error('FATAL ERROR: jwtPrivateKey is not defined.');
+    console.error('FATAL ERROR: shorturl_jwtprivatekey environment variable is not defined.');
     process.exit(1);
 }
 

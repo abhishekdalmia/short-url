@@ -37,7 +37,7 @@ router.post('/', async function(req, res) {
     await user.save();
 
     const token = user.generateAuthToken();
-    res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));
+    res.header('x-auth-token', token).send(_.pick(user, ['userId', 'name', 'email']));
 });
 
 router.delete('/', auth, async function(req, res) {
@@ -48,7 +48,7 @@ router.delete('/', auth, async function(req, res) {
             res.status(200).send(`Deleted ${req.user['userId']}`);
         }
         else {
-            res.status(500).send('Dunno what went wrogn.');
+            res.status(500).send('jwt does not match requested user to be deleted.');
         }
     }
     else {
