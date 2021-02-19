@@ -75,6 +75,7 @@ router.post('/', auth, async function(req, res) {
             return res.send({ reqStatus: false, shortUrl: null, message: 'The name ' + customName + ' is not available.' });
         }
         else {
+            newUrlCreated = true;
             // create a new shortUrl entry in the database
             url = new Url({
                 longUrl: longUrl,
@@ -110,23 +111,24 @@ router.post('/', auth, async function(req, res) {
             await url.save();
         }
     }
-    if ('userId' in req.user) {
-        // current short-url requested by a valid user
+    if ('userId' in req.user && newUrlCreated === true) {
+        // current short Url newly created by the current user
         url['userId'] = req.user['userId'];
     }
-    else {
-        // current short-url requested by an un-verified user
+    else if (!('userId' in req.user) && newUrlCreated === true) {
+        // new url created, but no verified user jwt provided
         url['userId'] = null;
     }
     await url.save();
-    if (customNameRequested === true) {
-        message = "Created new custom URL";
+    if (newUrlCreated === true && customNameRequested === true) {
+        message = 'New custom short url created.';
     }
-    else if (newUrlCreated === true) {
-        message = "Created a new url";
+    else if (newUrlCreated === true && customNameRequested === false) {
+        message = 'New random short url created.';
     }
     else {
-        message = "Url already existed";
+        // newUrlCreated === false && customNameRequested === false
+        message = 'Short url for given long url already existed in the database.';
     }
     res.send({ reqStatus: true, message: message, shortUrl: websiteUrl + ':' + port.toString() + '/url/' + url['shortUrl'] });
 });
