@@ -11,15 +11,25 @@ module.exports = function (req, res, next) {
     req.user = {};
     try {
         const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
-        User.findOne({ userId: decoded['userId'] })
-            .then(user => {
-                if (user != null) {
-                    req.user = decoded;
-                }
-            });
+        if ('iat' in decoded) {
+            // check the iat in the decoded with iat in database to confirm if the jwt has expired or not
+            User.findOne({ userId: decoded['userId'] })
+                .then(user => {
+                    if (user != null) {
+                        if (decoded['iat'] >= user['iat']) {
+                            req.user = decoded;
+                        }
+                    }
+                    next();
+                })
+                .catch(() => next());
+        }
+        else {
+            next();
+        }
+
     }
     catch (ex) {
-        ;
+        next();
     }
-    next();
 }

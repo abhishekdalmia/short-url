@@ -6,19 +6,12 @@ const express = require('express');
 const router = express.Router();
 // custom middlewares:
 const auth = require('../middleware/auth');
+// util functions:
+const utilFunctions = require('../util/index');
 
 // website related config values
 const websiteUrl = config.get('Website.url');
 const port = config.get('Website.port');
-
-// getDate reuturns current date in yyyymmdd format
-function getDate() {
-    let today = new Date();
-    let y = today.getFullYear();
-    let m = String(today.getMonth() + 1).padStart(2, "0");
-    let d = String(today.getDate()).padStart(2, "0");
-    return y+m+d;
-}
 
 router.get('/', function(req, res) {
     res.send('This api has no job right now.');
@@ -34,7 +27,7 @@ router.get('/:shortUrl', async function(req, res) {
     });
     if (url) {
         // update the redirect count for this url for current day
-        let currDate = getDate();
+        let currDate = utilFunctions['getDate']();
         let tempInd = url['hitRate'].findIndex(x => x.date == currDate);
         if (tempInd === -1) {
             // currDate was not already in the db
