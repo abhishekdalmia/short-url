@@ -132,6 +132,20 @@ router.post('/', auth, async function(req, res) {
 router.delete('/', auth, async function(req, res) {
     if ('userId' in req.user && 'shortUrl' in req.body) {
         // verified user, shortUrl present in the body, delete the shortUrl mentioned in the body if it exists in the database
+        // delete current url from user db
+        const user = await User.findOne({ userId: req.user['userId'] });
+        if (user === null) {
+            console.log(`Null user found, when it shouldn't have been so.`);
+        }
+        else {
+            if (user['urls'].indexOf(req.body['shortUrl']) === -1) {
+                console.error('Unknown error occured. Found a custom url, but the user pointed at by the current shortUrl does not have the current shortUrl as one of its urls.');
+            }
+            else {
+                user['urls'].splice(user['urls'].indexOf(req.body['shortUrl']), 1);
+                await user.save();
+            }
+        }
         let url = await Url.deleteOne({ userId: req.user['userId'], shortUrl: req.body['shortUrl'] });
         if (url['deletedCount'] == 1) {
             res.status(200).send(`Deleted ${req.body['shortUrl']}`);
