@@ -4,6 +4,7 @@ const config = require('config');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const {User, validate} = require('../models/user');
+const {Url} = require('../models/url');
 const utilFunctions = require('../util/index');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -98,7 +99,6 @@ router.delete('/', auth, async function(req, res) {
         if (!('password' in req.body)) {
             return res.status(400).send('Password not provided. Provide password for double checking.');
         }
-
         // verify if the password provided is valid or not
         user = await User.findOne({ userId: req.user['userId'] });
         if (!user) {
@@ -107,8 +107,11 @@ router.delete('/', auth, async function(req, res) {
         }
         const validPassword = await bcrypt.compare(req.body.password, user.password);
         if (!validPassword) return res.status(400).send('Invalid password.');
-
         // password verified, safe to delete the user
+        // before deleting user, delete all urls created by the current user
+        for (let index = 0; index < user['urls'].length; index++) {
+            await Url.deleteOne({ shortUrl: user['urls'][index] });
+        }
         user = await User.deleteOne({ userId: req.user['userId'] });
         if (user['deletedCount'] == 1) {
             return res.status(200).send(`Deleted ${req.user['userId']}`);
