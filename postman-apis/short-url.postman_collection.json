@@ -1,0 +1,304 @@
+{
+	"info": {
+		"name": "short-url",
+		"description": "API collection for the short-url project.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Call to /",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Call to GET /home/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/home/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"home",
+						""
+					]
+				},
+				"description": "Purpose is to verify the auth middleware"
+			},
+			"response": []
+		},
+		{
+			"name": "Dummy call to /url/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/url/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"url",
+						""
+					]
+				},
+				"description": "Homepage for shortening a URL"
+			},
+			"response": []
+		},
+		{
+			"name": "Call to GET /user/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NTg2OGQiLCJpYXQiOjE2MTU3NDM0NjI4Nzd9.m_RtXjep2fSluJn5P8ZvFBKl9i5EJcqab0_CVYk8g9Y",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:3000/user/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"user",
+						""
+					]
+				},
+				"description": "Provide valid auth token in header to get list of all urls created by a user"
+			},
+			"response": []
+		},
+		{
+			"name": "Redirection for a short URL",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/url/lol",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"url",
+						"lol"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new URL",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZDVhMjUiLCJpYXQiOjE2MTM3MTU2MzF9.5E94Ib5_dhsP-FLF8y0mdUWbCFrIjW_NMUTdthAglwg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"longUrl\": \"https://codeforces.com/\",\r\n    \"customName\": \"falafal\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/url",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"url"
+					]
+				},
+				"description": "Post request for creating new short-url"
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"temp-user\",\r\n    \"email\": \"temp@user.com\",\r\n    \"password\": \"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/user/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"user",
+						""
+					]
+				},
+				"description": "Create new user"
+			},
+			"response": []
+		},
+		{
+			"name": "Authenticate a user to get jwt",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"temp@user.com\",\r\n    \"password\": \"f\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/auth/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						""
+					]
+				},
+				"description": "Authenticate a user using email and password property to get the jwt"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a url",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZDVhMjUiLCJpYXQiOjE2MTM3MTU2MzF9.5E94Ib5_dhsP-FLF8y0mdUWbCFrIjW_NMUTdthAglwg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"shortUrl\": \"falafal\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/url/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"url",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a user",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MTM3MTgyNzJ9.rux1bYiqXFP_uD5TvnKZhCJjuUpkl3jn2taQ8nwDlsw",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:3000/user/?x-auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZDVhMjUiLCJpYXQiOjE2MTM3MTU2MzF9.5E94Ib5_dhsP-FLF8y0mdUWbCFrIjW_NMUTdthAglwg",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"user",
+						""
+					],
+					"query": [
+						{
+							"key": "x-auth-token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZDVhMjUiLCJpYXQiOjE2MTM3MTU2MzF9.5E94Ib5_dhsP-FLF8y0mdUWbCFrIjW_NMUTdthAglwg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Password",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"oldPassword\": \"password\",\r\n    \"newPassword\": \"newPassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/user/?x-auth-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3ZGI0MjkiLCJpYXQiOjE2MTM3NjY4NTh9.CrKUUo3L4JG8Qwcx_iE2Gn23zCM-ttM16H2mvAvcbTo",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"user",
+						""
+					],
+					"query": [
+						{
+							"key": "x-auth-token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3ZGI0MjkiLCJpYXQiOjE2MTM3NjY4NTh9.CrKUUo3L4JG8Qwcx_iE2Gn23zCM-ttM16H2mvAvcbTo"
+						}
+					]
+				},
+				"description": "expects 'x-auth-token' in header, {'oldPassword', 'newPassword'} in req.body"
+			},
+			"response": []
+		}
+	]
+}
