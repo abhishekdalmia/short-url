@@ -9,11 +9,15 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
-// the get method would require authentication feature
-// router.get('/me', auth, async function(req, res) {
-//   const user = await User.findById(req.user._id).select('-password');
-//   res.send(user);
-// });
+router.get('/', auth, async function(req, res) {
+    const user = await User.findOne({ userId: req.user['userId'] }).select('-password');
+    if ('userId' in req.user) {
+        return res.status(200).send(`All urls created by the current user: ${JSON.stringify(user['urls'])}`);
+    }
+    else {
+        return res.status(200).send('Do a "POST /auth/" request to login and see all customUrls created by you.');
+    }
+});
 
 router.post('/', async function(req, res) {
     // validating req.body to contain right info for creating a new user
@@ -31,7 +35,7 @@ router.post('/', async function(req, res) {
     let userId = user['_id'].toString().slice(-6);
     while(await User.findOne({ userId: userId })) {
         // the current date is added to create randomness
-        userId += Date.now().toString();
+        userId += utilFunctions['getIat']().toString();
         userId = md5(userId).slice(-6);
     }
     user['userId'] = userId;

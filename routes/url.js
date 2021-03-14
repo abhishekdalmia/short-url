@@ -1,6 +1,7 @@
 const config = require('config');
 const path = require('path');
 const {Url, validate} = require('../models/url');
+const {User} = require('../models/user');
 const { response } = require('express');
 const express = require('express');
 const router = express.Router();
@@ -74,7 +75,7 @@ router.post('/', auth, async function(req, res) {
                 longUrl: longUrl,
                 shortUrl: customName,
                 isCustom: true,
-                creationDate: Date.now()
+                creationDate: utilFunctions['getIat']()
             });
         }
     }
@@ -91,12 +92,12 @@ router.post('/', auth, async function(req, res) {
             url = new Url({
                 longUrl: longUrl,
                 isCustom: false,
-                creationDate: Date.now()
+                creationDate: utilFunctions['getIat']()
             });
             let hash = url['_id'].toString().slice(-6);
             while(await Url.findOne({ shortUrl: hash })) {
                 // the current date is added to create randomness
-                hash += Date.now().toString();
+                hash += utilFunctions['getIat']().toString();
                 hash = md5(hash).slice(-6);
             }
             url['shortUrl'] = hash;
@@ -105,6 +106,10 @@ router.post('/', auth, async function(req, res) {
     if ('userId' in req.user && newUrlCreated === true) {
         // current short Url newly created by the current user
         url['userId'] = req.user['userId'];
+        // add the new url to the db of the logged in user
+        const user = await User.findOne({ userId: req.user['userId'] });
+        user['urls'].push(url['shortUrl']);
+        await user.save();
     }
     else if (!('userId' in req.user) && newUrlCreated === true) {
         // new url created, but no verified user jwt provided

@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
+const utilFunctions = require('../util/index');
 
 const urlSchema = new mongoose.Schema({
     longUrl: String,
@@ -18,8 +19,8 @@ const urlSchema = new mongoose.Schema({
     },
     isCustom: String,
     userId: String,
-    creationDate: { type: Date, default: Date.now() },
-    expirationDate: { type: Date, default: Date.now() }
+    creationDate: { type: Date, default: utilFunctions['getIat']() },
+    expirationDate: { type: Date, default: utilFunctions['getIat']() }
 });
 
 const Url = mongoose.model('url', urlSchema);

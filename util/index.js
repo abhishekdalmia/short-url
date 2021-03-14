@@ -1,7 +1,6 @@
 let allFunctions = {
     getIat: function() {
-        let currTime = new Date();
-        return (currTime.getTime());
+        return Date.now();
     },
     getDate: function() {
         let today = new Date();

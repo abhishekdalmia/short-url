@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 5,
         maxlength: 1024
-    }
+    },
+    urls: { type: Array, "default": [] }
 });
 
 userSchema.methods.generateAuthToken = function() {

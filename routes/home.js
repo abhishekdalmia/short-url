@@ -5,12 +5,11 @@ const router = express.Router();
 
 router.get('/', auth, function(req, res) {
     if ('userId' in req.user) {
-        console.log(`Request from a valid user ${req.user.userId}`)
+        return res.send(`Request from a valid user ${req.user.userId}`)
     }
     else {
-        console.log("Request from non-verified user");
+        return res.send(`Request from an invalid user`);
     }
-    res.send("Home Page.");
 });
 
 module.exports = router;
