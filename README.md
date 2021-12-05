@@ -1,7 +1,3 @@
-[![Known Vulnerabilities](https://snyk.io/test/github/abhishekdalmia/short-url/badge.svg)]
-
-(https://snyk.io/test/github/abhishekdalmia/short-url)
-
 # short-url
 Simple url shortening service
 
